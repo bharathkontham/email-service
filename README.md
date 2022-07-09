@@ -21,7 +21,9 @@
 
 ## APIs
 
-* POST http://localhost:3000/sendemail
+* Swagger url <http://localhost:3000/docs>
+
+* POST <http://localhost:3000/sendemail>
 
 * Payload sample with ejs template 'sample'
 

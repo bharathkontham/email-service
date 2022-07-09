@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { ISendMailOptions } from '@nestjs-modules/mailer';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
+import { ApiTags, ApiBody } from '@nestjs/swagger';
 
 @Controller()
 export class AppController {
@@ -18,6 +19,36 @@ export class AppController {
   }
 
   @Post('/sendemail')
+  @ApiTags('Email')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        to: {
+          type: 'string',
+        },
+        from: {
+          type: 'string',
+        },
+        subject: {
+          type: 'string',
+        },
+        text: {
+          type: 'string',
+        },
+        html: {
+          type: 'string',
+        },
+        template: {
+          type: 'string',
+        },
+        content: {
+          type: 'object',
+          properties: {},
+        },
+      },
+    },
+  })
   async sendEmail(@Body() emailContent: ISendMailOptions): Promise<any> {
     await this.emailqueue.add('emailJob', emailContent);
     return 'Email added to Queue';
