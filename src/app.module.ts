@@ -4,6 +4,8 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
+import { BullModule } from '@nestjs/bullmq';
+import { EmailProcessor } from './email.processor';
 
 @Module({
   imports: [
@@ -38,8 +40,28 @@ import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
         };
       },
     }),
+    BullModule.forRootAsync({
+      imports: [ConfigModule.forRoot()],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        return {
+          connection: {
+            host: configService.get('REDIS_HOST'),
+            port: configService.get('REDIS_PORT'),
+          },
+          defaultJobOptions: {
+            attempts: 3,
+            removeOnComplete: true,
+            removeOnFail: true,
+          },
+        };
+      },
+    }),
+    BullModule.registerQueue({
+      name: 'emailqueue',
+    }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, EmailProcessor],
 })
 export class AppModule {}
