@@ -1,6 +1,7 @@
 import { Controller, Get, Post } from '@nestjs/common';
 import { AppService } from './app.service';
-import { EmailPayload } from './interfaces/email-payload.interface';
+// import { EmailPayload } from './interfaces/email-payload.interface';
+import { ISendMailOptions } from '@nestjs-modules/mailer';
 
 @Controller()
 export class AppController {
@@ -12,7 +13,7 @@ export class AppController {
   }
 
   @Post()
-  async sendEmail(emailContent: EmailPayload): Promise<any> {
+  async sendEmail(emailContent: ISendMailOptions): Promise<any> {
     return this.appService.sendEmail(emailContent);
   }
 }
