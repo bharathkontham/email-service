@@ -9,31 +9,34 @@ import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
   imports: [
     ConfigModule,
     MailerModule.forRootAsync({
-      imports: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        transport: {
-          host: configService.get('MAIL_HOST'),
-          port: configService.get('MAIL_PORT_TLS'),
-          secure: true,
-          auth: {
-            user: configService.get('MAIL_USERNAME'),
-            pass: configService.get('MAIL_PASSWORD'),
+      imports: [ConfigModule.forRoot()],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        return {
+          transport: {
+            host: configService.get('MAIL_HOST'),
+            port: configService.get('MAIL_PORT_TLS'),
+            secure: false,
+            auth: {
+              user: configService.get('MAIL_USERNAME'),
+              pass: configService.get('MAIL_PASSWORD'),
+            },
+            tls: {
+              rejectUnauthorized: false,
+            },
           },
-          tls: {
-            rejectUnauthorized: false,
+          defaults: {
+            from: configService.get('MAIL_FROM'),
           },
-        },
-        defaults: {
-          from: configService.get('MAIL_FROM'),
-        },
-        template: {
-          dir: __dirname + '/templates',
-          adapter: new EjsAdapter(),
-          options: {
-            strict: true,
+          template: {
+            dir: process.cwd() + '/templates',
+            adapter: new EjsAdapter(),
+            options: {
+              strict: false,
+            },
           },
-        },
-      }),
+        };
+      },
     }),
   ],
   controllers: [AppController],

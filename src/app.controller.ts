@@ -1,4 +1,4 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AppService } from './app.service';
 // import { EmailPayload } from './interfaces/email-payload.interface';
 import { ISendMailOptions } from '@nestjs-modules/mailer';
@@ -12,8 +12,8 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Post()
-  async sendEmail(emailContent: ISendMailOptions): Promise<any> {
+  @Post('/sendemail')
+  async sendEmail(@Body() emailContent: ISendMailOptions): Promise<any> {
     return this.appService.sendEmail(emailContent);
   }
 }
